@@ -190,42 +190,7 @@ impl<P: BnConfig> From<G2Affine<P>> for G2Prepared<P> {
                 infinity: true,
             }
         } else {
-            let two_inv = P::Fp::one().double().inverse().unwrap();
-            let mut ell_coeffs = vec![];
-            let mut r = G2HomProjective::<P> {
-                x: q.x,
-                y: q.y,
-                z: Fp2::one(),
-            };
-
-            let neg_q = -q;
-
-            for bit in P::ATE_LOOP_COUNT.iter().rev().skip(1) {
-                ell_coeffs.push(r.double_in_place(&two_inv));
-
-                match bit {
-                    1 => ell_coeffs.push(r.add_in_place(&q)),
-                    -1 => ell_coeffs.push(r.add_in_place(&neg_q)),
-                    _ => continue,
-                }
-            }
-
-            let q1 = mul_by_char::<P>(q);
-            let mut q2 = mul_by_char::<P>(q1);
-
-            if P::X_IS_NEGATIVE {
-                r.y = -r.y;
-            }
-
-            q2.y = -q2.y;
-
-            ell_coeffs.push(r.add_in_place(&q1));
-            ell_coeffs.push(r.add_in_place(&q2));
-
-            Self {
-                ell_coeffs,
-                infinity: false,
-            }
+            Self::from_affine(q)
         }
     }
 }

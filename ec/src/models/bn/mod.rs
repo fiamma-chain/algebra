@@ -322,7 +322,8 @@ impl<P: BnConfig> Pairing for Bn<P> {
         a: impl IntoIterator<Item = impl Into<Self::G1Prepared>>,
         b: impl IntoIterator<Item = impl Into<Self::G2Prepared>>,
     ) -> MillerLoopOutput<Self> {
-        P::multi_miller_loop(a, b)
+        // Mark: here is adopted with the G2Affine into G2Prepared.
+        P::multi_miller_loop_affine(a, b)
     }
 
     fn multi_miller_loop_affine(
